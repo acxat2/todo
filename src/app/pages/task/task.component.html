@@ -1,0 +1,15 @@
+<button class="btn btn-back" (click)="back()">Назад к списку</button>
+<div class="task-container">
+  <div class="task-header">
+    <h3>{{data.title}}</h3>
+    <div class="status-container">
+      <div>Статус: {{data.status}}</div>
+      <div class="toggle-container">
+        <button class="btn" [className]="data.status === 'не выполнена' ? 'btn btn-done' : 'btn btn-nodone'" (click)="toggleStatus()">
+          {{data.status === 'не выполнена' ? 'Выполнить' : 'Отменить выполнение'}}
+        </button>
+      </div>
+    </div>
+  </div>
+  <p class="description">{{data.description}}</p>
+</div>

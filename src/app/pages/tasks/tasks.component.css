@@ -1,0 +1,17 @@
+.tasks-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.btn-new {
+  background-color: rgb(187, 255, 189);
+}
+
+.list-item {
+  border-bottom: 1px solid rgb(200, 199, 199);
+}
+
+.list-item:first-child {
+  border-top: 1px solid rgb(200, 199, 199);
+}

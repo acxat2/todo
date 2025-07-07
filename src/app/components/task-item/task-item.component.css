@@ -1,0 +1,17 @@
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0
+}
+
+.btn-more {
+  background-color: rgb(188, 189, 250);
+}
+
+.btn {
+  margin-right: 20px;
+}
+.btn:last-child {
+  margin-right: 0;
+}

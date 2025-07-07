@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -9,5 +10,20 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'todo';
+  public title = 'ToDo';
+  public visible = new BehaviorSubject(false);
+
+  public scroll() {
+    window.scrollTo(0, 0);
+  }
+
+  constructor() {
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 200) {
+        this.visible.next(true);
+      } else {
+        this.visible.next(false);
+      }
+    })
+  }
 }

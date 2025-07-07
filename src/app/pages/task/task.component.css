@@ -1,0 +1,29 @@
+.btn-back {
+  margin-bottom: 20px;
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.status-container {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-container {
+  text-align: end;
+  width: 120px;
+}
+
+.btn-nodone {
+  margin-left: 10px;
+  background-color: rgb(253, 174, 174);
+}
+
+.description {
+  text-indent: 15px;
+}

@@ -1,0 +1,9 @@
+<div class="item">
+  <div class="item-title">{{data.title}}</div>
+  <div class="item-button-group">
+    <button class="btn btn-del" (click)="onDelete()">Удалить</button>
+    <button class="btn btn-more" (click)="onMore()">Подробнее</button>
+    <mat-slide-toggle color (change)="toggleChange()" [checked]="data.status === 'выполнена'"></mat-slide-toggle>
+  </div>
+</div>
+<!-- <mat-divider/> -->

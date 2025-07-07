@@ -1,0 +1,28 @@
+<div class="modal">
+  <div class="modat-container">
+    <h2>Создать новую задачу</h2>
+    <form class="form" #form="ngForm">
+      <mat-form-field>
+        <mat-label>Название</mat-label>
+        <input matInput
+          name="title"
+          ngModel
+          #title="ngModel"
+          required
+        >
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Описание задачи</mat-label>
+        <textarea matInput
+          name="description"
+          ngModel
+          #description="ngModel"
+        ></textarea>
+      </mat-form-field>
+    </form>
+    <div class="btn-contaner">
+      <button class="btn btn-done" (click)="sendForm(form)">Сохранить</button>
+      <button class="btn btn-del"(click)="del()">Отменить</button>
+    </div>
+  </div>
+</div>

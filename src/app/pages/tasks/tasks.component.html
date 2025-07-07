@@ -1,0 +1,18 @@
+<div class="tasks-header">
+  <h2>Список задач</h2>
+  <button class="btn btn-new" (click)="addTask()">Добавить задачу</button>
+</div>
+<div>
+  @if (!data.length) {
+    <h3 style="margin-left: auto; margin-right: auto;; width: fit-content;">У вас пока нет активных задач. Нажмите <b>"Добавить задачу"</b>, чтоб создать новую</h3>
+  }
+  @for (item of data; track item) {
+  <div class="list-item">
+    <app-task-item [data]=item></app-task-item>
+  </div>
+  }
+</div>
+
+@if (formNew) {
+  <app-form-new (close)="closeModal()" (save)="saveTask($event)"></app-form-new>
+}

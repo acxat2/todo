@@ -15,6 +15,7 @@ import { taskForm } from '../../types/types';
 
 export class TasksComponent {
   public data!: ITask[]
+  // public data$
   public formNew: boolean = false;
 
   public openModal() {
@@ -36,6 +37,7 @@ export class TasksComponent {
   public closeModal() {
     this.formNew = false;
   }
+
   constructor(private tasksService: TasksService) {
     this.data = tasksService.getTasks();
   }

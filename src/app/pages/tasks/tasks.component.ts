@@ -17,7 +17,7 @@ export class TasksComponent {
   public data!: ITask[]
   public formNew: boolean = false;
 
-  public addTask() {
+  public openModal() {
     this.formNew = true;
   }
 

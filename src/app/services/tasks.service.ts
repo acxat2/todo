@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { taskForm } from '../types/types';
+import { StorageService } from './storage.service';
 
 export type status = 'выполнена' | 'не выполнена'
 export interface ITask {
@@ -13,32 +14,8 @@ export interface ITask {
   providedIn: 'root'
 })
 export class TasksService {
-  private data: ITask[] = [
-    {
-      id: 1,
-      title: "Task 1",
-      description: 'Задача 1',
-      status: 'не выполнена'
-    },
-    {
-      id: 2,
-      title: "Task 2",
-      description: 'Задача 2',
-      status: 'выполнена'
-    },
-    {
-      id: 3,
-      title: "Task 3",
-      description: 'Задача 3',
-      status: 'не выполнена'
-    },
-    {
-      id: 4,
-      title: "Task 4",
-      description: 'Задача 4',
-      status: 'не выполнена'
-    },
-  ]
+  private keyStorage = 'tasks';
+  private data: ITask[] = []
 
 
   public changeStatus(id: number) {
@@ -47,16 +24,18 @@ export class TasksService {
         n.status === 'выполнена' ? n.status = 'не выполнена' : n.status = 'выполнена';
       }
     })
+    this.saveData();
   }
 
   public addTask(event: taskForm) {
     const task: ITask = {
-      id: 5,
+      id: Date.now(),
       title: event.title,
       description: event.description,
       status: event.status
     };
     this.data.push(task)
+    this.saveData();
   }
 
   public getTasks(): ITask[] | [] {
@@ -69,9 +48,18 @@ export class TasksService {
 
   public deleteTask(id: number) {
     const index = this.data.findIndex(n => n.id == id)
-    this.data.splice(index, 1)
-    console.log(this.data);
+    this.data.splice(index, 1);
+    this.saveData();
   }
 
-  constructor() { }
+  constructor(private storage: StorageService) {
+    const res = storage.getFromStorage(this.keyStorage);
+    if (res) {
+      this.data = JSON.parse(res);
+    }
+  }
+
+  private saveData() {
+    this.storage.saveToStorage(this.keyStorage, JSON.stringify(this.data))
+  }
 }

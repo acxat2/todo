@@ -30,7 +30,7 @@ export class TasksComponent {
     };
 
     this.tasksService.addTask(task)
-
+    this.closeModal()
   }
 
   public closeModal() {

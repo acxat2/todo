@@ -1,6 +1,6 @@
-import { Injectable, OnInit } from '@angular/core';
-import { ITask } from './tasks.service';
-import { taskForm } from '../types/types';
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
+import { ITask, taskForm } from '../types/types';
 
 @Injectable({
   providedIn: 'root'
@@ -8,102 +8,110 @@ import { taskForm } from '../types/types';
 
 export class DbService {
   private dbName = 'todobase';
+  private storeName = 'tasks';
   private dbVersion = 1;
+  private initial: boolean = false;
+  public dbInitialized = new Subject<boolean>();
   private db: IDBDatabase | null = null;
+  public task$: Subject<ITask | null> = new Subject<ITask | null>()
+  public tasks$: Subject<ITask[] | []> = new Subject<ITask[] | []>()
 
-constructor() {
-    this.initDatabase();
+  constructor() {
+      this.initDatabase();
+    }
+
+  public isActive(): boolean {
+    return this.initial
   }
 
   private initDatabase(): void {
-    const request = window.indexedDB.open(this.dbName, this.dbVersion);
+    const request = indexedDB.open(this.dbName, this.dbVersion);
 
-    request.onupgradeneeded = (event: any) => {
-      const db = event.target.result;
+    request.onupgradeneeded = () => {
+      const db = request.result;
 
-      // Создаём ObjectStore
-      if (!db.objectStoreNames.contains('users')) {
-        db.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
+      if (!db.objectStoreNames.contains(this.storeName)) {
+        const obgectStore = db.createObjectStore(this.storeName, { keyPath: 'id', autoIncrement: true });
+        obgectStore.createIndex('title', 'title');
+        obgectStore.createIndex('description', 'description');
       }
     };
 
-    request.onsuccess = (event: any) => {
-      this.db = event.target.result;
+    request.onsuccess = () => {
+      this.db = request.result;
+      this.dbInitialized.next(true)
+      this.initial = true
     };
 
-    request.onerror = (event: any) => {
-      console.error('Ошибка при открытии БД:', event.target.error);
+    request.onerror = () => {
+      console.error('Ошибка при открытии БД:', request.error);
     };
   }
 
-  // Создание записи
-  async add<T>(storeName: string, data: T): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([storeName], 'readwrite');
-      const objectStore = transaction.objectStore(storeName);
+  public add(data: taskForm) {
+      const transaction = this.db!.transaction([this.storeName], 'readwrite');
+      const objectStore = transaction.objectStore(this.storeName);
 
       const request = objectStore.add(data);
 
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
+      transaction.oncomplete = () => {
+        this.getAll();
+      }
+      request.onerror = () => console.error(request.error);
   }
 
-  // Получение записи по ключу
-  async get<T>(storeName: string, key: any): Promise<T | null> {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([storeName], 'readonly');
-      const objectStore = transaction.objectStore(storeName);
-
+  public get(key: number) {
+      const transaction = this.db!.transaction([this.storeName], 'readonly');
+      const objectStore = transaction.objectStore(this.storeName);
       const request = objectStore.get(key);
 
-      request.onsuccess = () => resolve(request.result || null);
-      request.onerror = () => reject(request.error);
-    });
+      request.onsuccess = () => {
+        const matching = request.result
+        if (matching !== undefined ) {
+          this.task$.next(matching)
+        }
+      };
+      request.onerror = () => console.error(request.error);
   }
 
-  // Получение всех записей
-  async getAll<T>(storeName: string): Promise<T[]> {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([storeName], 'readonly');
-      const objectStore = transaction.objectStore(storeName);
-
+  public getAll<T>() {
+      const transaction = this.db!.transaction([this.storeName], 'readonly');
+      const objectStore = transaction.objectStore(this.storeName);
       const request = objectStore.getAll();
 
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => reject(request.error);
-    });
+      request.onsuccess = () => {
+        this.tasks$.next(request.result || [])
+      };
+      request.onerror = () => console.error(request.error);
   }
 
-  // Обновление записи
-  async update<T>(storeName: string, key: any, data: T): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([storeName], 'readwrite');
-      const objectStore = transaction.objectStore(storeName);
+  public update<T>(task: ITask): void {
+      const transaction = this.db!.transaction([this.storeName], 'readwrite');
+      const objectStore = transaction.objectStore(this.storeName);
+      const request = objectStore.put(task);
 
-      const request = objectStore.put(data, key);
-
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
+      request.onsuccess = () => this.getAll();
+      request.onerror = () => console.error(request.error);
   }
 
-  // Удаление записи
-  async delete(storeName: string, key: any): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([storeName], 'readwrite');
-      const objectStore = transaction.objectStore(storeName);
+  public toggleStatus(task: ITask): void {
+    const transaction = this.db!.transaction([this.storeName], 'readwrite');
+    const objectStore = transaction.objectStore(this.storeName);
+
+    task.status === 'не выполнена' ? task.status = 'выполнена' : task.status = 'не выполнена'
+    const request = objectStore.put(task);
+
+    request.onsuccess = () => {};
+    request.onerror = () => console.error(request.error);
+  }
+
+  public delete(key: number) {
+      const transaction = this.db!.transaction([this.storeName], 'readwrite');
+      const objectStore = transaction.objectStore(this.storeName);
 
       const request = objectStore.delete(key);
 
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
+      request.onsuccess = () => {this.getAll()};
+      request.onerror = () => console.error(request.error);
   }
 }
-
-
-
-
-
-

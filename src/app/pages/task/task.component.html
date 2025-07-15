@@ -1,11 +1,11 @@
 <button class="btn btn-back" (click)="back()">Назад к списку</button>
-<div class="task-container">
+<div class="task-container" *ngIf="data$ | async as data">
   <div class="task-header">
     <h3>{{data.title}}</h3>
     <div class="status-container">
       <div>Статус: {{data.status}}</div>
       <div class="toggle-container">
-        <button class="btn" [className]="data.status === 'не выполнена' ? 'btn btn-done' : 'btn btn-nodone'" (click)="toggleStatus()">
+        <button class="btn" [className]="data.status === 'не выполнена' ? 'btn btn-done' : 'btn btn-nodone'" (click)="toggleStatus(data)">
           {{data.status === 'не выполнена' ? 'Выполнить' : 'Отменить выполнение'}}
         </button>
       </div>

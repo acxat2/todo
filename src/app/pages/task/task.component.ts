@@ -1,27 +1,40 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ITask, TasksService } from '../../services/tasks.service';
+import { Observable } from 'rxjs';
+import { DbService} from '../../services/db.service';
+import { ITask } from '../../types/types';
 
 @Component({
   selector: 'app-task',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
 })
 export class TaskComponent {
-  public data!: ITask;
+  public data$!: Observable<ITask | null>;
 
   public back() {
     this.router.navigate(['tasks'])
   }
 
-  public toggleStatus() {
-    this.tasksService.changeStatus(this.data.id)
+  public toggleStatus(data: ITask) {
+    this.dbService.toggleStatus(data)
   }
 
-  constructor(private route: ActivatedRoute, private tasksService: TasksService, private router: Router) {
+  constructor(private route: ActivatedRoute, private dbService: DbService, private router: Router) {
     const id = this.route.snapshot.paramMap.get('id') as any as number;
-    this.data = this.tasksService.getTask(id) as ITask;
+    if (id) {
+      if (!dbService.isActive()) {
+        dbService.dbInitialized.subscribe(() => {
+          this.dbService.get(+id);
+          this.data$ = dbService.task$;
+        })
+      } else {
+        this.dbService.get(+id);
+        this.data$ = dbService.task$;
+      }
+    }
   }
 }

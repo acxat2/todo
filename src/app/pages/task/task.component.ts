@@ -4,19 +4,33 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { DbService} from '../../services/db.service';
 import { ITask } from '../../types/types';
+import { FormEditComponent } from '../../components/form-edit/form-edit.component';
 
 @Component({
   selector: 'app-task',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormEditComponent],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
 })
 export class TaskComponent {
   public data$!: Observable<ITask | null>;
+  public modalActive = false;
 
   public back() {
     this.router.navigate(['tasks'])
+  }
+
+  public openModal() {
+    this.modalActive = true;
+  }
+
+  public edit() {
+
+  }
+
+  public closeModal() {
+    this.modalActive = false;
   }
 
   public toggleStatus(data: ITask) {

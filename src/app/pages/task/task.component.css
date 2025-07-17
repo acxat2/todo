@@ -1,3 +1,7 @@
+.task-container {
+  position: relative;
+}
+
 .btn-back {
   margin-bottom: 20px;
 }

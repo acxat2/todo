@@ -1,27 +1,55 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ITask, TasksService } from '../../services/tasks.service';
+import { Observable, Subject } from 'rxjs';
+import { DbService} from '../../services/db.service';
+import { ITask } from '../../types/types';
+import { FormEditComponent } from '../../components/form-edit/form-edit.component';
 
 @Component({
   selector: 'app-task',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormEditComponent],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
 })
 export class TaskComponent {
-  public data!: ITask;
+  public data$!: Subject<ITask | null>;
+  public modalActive = false;
 
   public back() {
     this.router.navigate(['tasks'])
   }
 
-  public toggleStatus() {
-    this.tasksService.changeStatus(this.data.id)
+  public openModal() {
+    this.modalActive = true;
   }
 
-  constructor(private route: ActivatedRoute, private tasksService: TasksService, private router: Router) {
+  public edit(event: ITask) {
+    this.data$.next(event)
+    this.dbService.update(event)
+  }
+
+  public closeModal() {
+    this.modalActive = false;
+  }
+
+  public toggleStatus(data: ITask) {
+    this.dbService.toggleStatus(data);
+  }
+
+  constructor(private route: ActivatedRoute, private dbService: DbService, private router: Router) {
     const id = this.route.snapshot.paramMap.get('id') as any as number;
-    this.data = this.tasksService.getTask(id) as ITask;
+    if (id) {
+      if (!dbService.isActive()) {
+        dbService.dbInitialized.subscribe(() => {
+          this.dbService.get(+id);
+          this.data$ = dbService.task$;
+        })
+      } else {
+        this.dbService.get(+id);
+        this.data$ = dbService.task$;
+      }
+    }
   }
 }

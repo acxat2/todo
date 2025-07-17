@@ -1,42 +1,57 @@
-import { Component } from '@angular/core';
-import {MatListModule} from '@angular/material/list';
-import { TaskItemComponent } from '../../components/task-item/task-item.component';
-import { ITask, TasksService } from '../../services/tasks.service';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { MatListModule } from '@angular/material/list';
+import { Subject } from 'rxjs';
 import { FormNewComponent } from '../../components/form/form-new.component';
-import { taskForm } from '../../types/types';
+import { TaskItemComponent } from '../../components/task-item/task-item.component';
+import { DbService } from '../../services/db.service';
+import { ITask, taskForm} from '../../types/types';
 
 @Component({
   selector: 'app-tasks',
   standalone: true,
-  imports: [MatListModule, TaskItemComponent, FormNewComponent],
+  imports: [MatListModule, TaskItemComponent, FormNewComponent, CommonModule],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.css'
 })
 
-export class TasksComponent {
-  public data!: ITask[]
+export class TasksComponent implements OnInit {
+  public data$!: Subject<ITask[] | []>
   public formNew: boolean = false;
 
-  public addTask() {
+  public openModal() {
     this.formNew = true;
   }
 
   public saveTask(event: taskForm): void {
-    const task: ITask = {
-      id: 5,
+    const task: taskForm = {
       title: event.title,
       description: event.description,
       status: event.status
     };
 
-    this.tasksService.addTask(task)
+    this.dbService.add(task)
     this.closeModal()
   }
 
   public closeModal() {
     this.formNew = false;
   }
-  constructor(private tasksService: TasksService) {
-    this.data = tasksService.getTasks();
+
+  constructor(private dbService: DbService) {
+    if (!this.dbService.isActive()) {
+
+      this.dbService.dbInitialized.subscribe(() => {
+        this.dbService.getAll()
+        this.data$ = this.dbService.tasks$
+      })
+    } else {
+      this.dbService.getAll();
+      this.data$ = this.dbService.tasks$
+    }
+  }
+
+  ngOnInit(): void {
+
   }
 }

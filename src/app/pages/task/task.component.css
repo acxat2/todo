@@ -2,6 +2,13 @@
   margin-bottom: 20px;
 }
 
+.btn-edit {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  background-color: rgb(179, 233, 251);
+}
+
 .task-header {
   display: flex;
   align-items: center;

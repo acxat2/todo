@@ -1,22 +1,20 @@
-<!-- <div class="task-container"> -->
   <button class="btn btn-back" (click)="back()">Назад к списку</button>
   <div class="task-container" *ngIf="data$ | async as data">
-    <button class="btn" (click)="openModal()">Редактировать</button>
     <div class="task-header">
       <h2>{{data.title}}</h2>
       <div class="status-container">
         <div>Статус: {{data.status}}</div>
         <div class="toggle-container">
           <button class="btn" [className]="data.status === 'не выполнена' ? 'btn btn-done' : 'btn btn-nodone'"
-            (click)="toggleStatus(data)">
-            {{data.status === 'не выполнена' ? 'Выполнить' : 'Отменить выполнение'}}
-          </button>
-        </div>
+          (click)="toggleStatus(data)">
+          {{data.status === 'не выполнена' ? 'Выполнить' : 'Отменить выполнение'}}
+        </button>
       </div>
     </div>
-    <p class="description">{{data.description}}</p>
+  </div>
+  <p class="description">{{data.description}}</p>
+  <button class="btn btn-edit" (click)="openModal()">Редактировать</button>
     @if (modalActive) {
-      <app-form-edit (close)="closeModal()" (save)="edit()" [data]="data"></app-form-edit>
+      <app-form-edit (close)="closeModal()" (save)="edit($event)" [data]="data"></app-form-edit>
     }
   </div>
-<!-- </div> -->

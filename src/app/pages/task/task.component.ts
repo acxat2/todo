@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { DbService} from '../../services/db.service';
 import { ITask } from '../../types/types';
 import { FormEditComponent } from '../../components/form-edit/form-edit.component';
@@ -14,7 +14,7 @@ import { FormEditComponent } from '../../components/form-edit/form-edit.componen
   styleUrl: './task.component.css'
 })
 export class TaskComponent {
-  public data$!: Observable<ITask | null>;
+  public data$!: Subject<ITask | null>;
   public modalActive = false;
 
   public back() {
@@ -25,8 +25,9 @@ export class TaskComponent {
     this.modalActive = true;
   }
 
-  public edit() {
-
+  public edit(event: ITask) {
+    this.data$.next(event)
+    this.dbService.update(event)
   }
 
   public closeModal() {
@@ -34,7 +35,7 @@ export class TaskComponent {
   }
 
   public toggleStatus(data: ITask) {
-    this.dbService.toggleStatus(data)
+    this.dbService.toggleStatus(data);
   }
 
   constructor(private route: ActivatedRoute, private dbService: DbService, private router: Router) {

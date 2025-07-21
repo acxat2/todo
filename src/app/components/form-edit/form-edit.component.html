@@ -1,23 +1,3 @@
-<!-- <div class="modal">
-  <div class="modat-container">
-    <h2>Редактировать задачу</h2>
-    <form class="form" #form="ngForm">
-      <mat-form-field>
-        <mat-label>Название</mat-label>
-        <input matInput name="title" [(ngModel)]="val.title" #title="ngModel">
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>Описание задачи</mat-label>
-        <textarea matInput name="description" [(ngModel)]="val.description" #description="ngModel"></textarea>
-      </mat-form-field>
-    </form>
-    <div class="btn-contaner">
-      <button class="btn btn-done" (click)="sendForm(form)">Сохранить</button>
-      <button class="btn btn-del" (click)="del()">Отменить</button>
-    </div>
-  </div>
-</div> -->
-
 <div class="modal">
   <div class="modat-container">
     <h2>Редактировать задачу</h2>
@@ -27,6 +7,7 @@
         <input matInput
           name="title"
           ngModel="{{data.title}}"
+          required
         >
         </mat-form-field>
       <mat-form-field>

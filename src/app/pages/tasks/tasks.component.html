@@ -9,7 +9,6 @@
     </div>
    }
    @for (item of data; track item) {
-     <!-- <pre>{{item | json}}</pre> -->
      <div class="list-item">
        <app-task-item [data]=item></app-task-item>
       </div>
@@ -19,6 +18,3 @@
 @if (formNew) {
   <app-form-new (close)="closeModal()" (save)="saveTask($event)"></app-form-new>
 }
-
-<template>
-</template>

@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { Subject } from 'rxjs';
 import { FormNewComponent } from '../../components/form/form-new.component';
 import { TaskItemComponent } from '../../components/task-item/task-item.component';
 import { DbService } from '../../services/db.service';
-import { ITask, taskForm} from '../../types/types';
+import { ITask, taskForm } from '../../types/types';
 
 @Component({
   selector: 'app-tasks',
@@ -15,7 +15,7 @@ import { ITask, taskForm} from '../../types/types';
   styleUrl: './tasks.component.css'
 })
 
-export class TasksComponent implements OnInit {
+export class TasksComponent {
   public data$!: Subject<ITask[] | []>
   public formNew: boolean = false;
 
@@ -49,9 +49,5 @@ export class TasksComponent implements OnInit {
       this.dbService.getAll();
       this.data$ = this.dbService.tasks$
     }
-  }
-
-  ngOnInit(): void {
-
   }
 }
